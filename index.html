@@ -99,7 +99,7 @@ var OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{
 
       var marker = L.marker([row.lat, row.lon], {
         opacity: 1
-      }).bindPopup(row.name);
+      }).bindPopup('<p>' + row.name + '<br />' + row.addr + '<br />' + row.tel + '</p>'); // .setContent('<p>Hello world!<br />This is a nice popup.</p>')
       
       marker.addTo(map);
     }
