@@ -116,7 +116,7 @@
       const queryString = window.location.search; 
       const urlParams = new URLSearchParams(queryString);
       const lang = urlParams.get('lang')
-      var csvlink = (lang == 'en') ? 'poi_en.csv' | 'poi.csv'
+      var csvlink = (lang == 'en') ? 'poi_en.csv' : 'poi.csv';
 
       $.get(csvlink, function(csvString) {
         // Use PapaParse to convert string to array of objects
