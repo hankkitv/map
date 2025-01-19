@@ -16,6 +16,7 @@
         height: 100%;
         width: 79%; /* Adjusted to make room for the panel */
         margin-left: 21%;
+        transition: all 0.3s ease; /* Optional: add transition for smooth effect */
       }
 
       #left-panel {
@@ -32,11 +33,37 @@
         font-family: monospace;
         font-size: large;
         line-height: 1.2;
+        transition: all 0.3s ease; /* Optional: add transition for smooth effect */
       }
 
       #map {
         width: 79%;
         height: 100%;
+        transition: all 0.3s ease; /* Optional: add transition for smooth effect */
+      }
+
+      /* Media query for mobile devices */
+      @media (max-width: 768px) {
+          #left-panel {
+              position: fixed; /* Change from absolute to fixed for mobile view */
+              top: calc(100% - 300px);
+              bottom: 0; /* Place the panel at the bottom */
+              left: 0;
+              width: 100%; /* Make the panel full-width */
+              height: 300px; /* Adjust the height for a bottom panel */
+          }
+
+          #map {
+              width: 100%; /* Make the map full-width when the panel is at the bottom */
+              height: calc(100% - 300px); /* Reduce the map height by the height of the bottom panel */
+          }
+
+          .leaflet-container {
+            height: 100%;
+            width: 100%; /* Adjusted to make room for the panel */
+            margin-left: 0%;
+            transition: all 0.3s ease; /* Optional: add transition for smooth effect */
+          }
       }
 
       #left-panel h2 {
@@ -116,7 +143,7 @@
       const queryString = window.location.search; 
       const urlParams = new URLSearchParams(queryString);
       const lang = urlParams.get('lang')
-      var csvlink = (lang == 'en') ? 'poi_en.csv' : 'poi.csv';
+      var csvlink = (lang == 'en') ? 'https://raw.githubusercontent.com/hankkitv/map/refs/heads/main/poi_en.csv' : 'https://raw.githubusercontent.com/hankkitv/map/refs/heads/main/poi.csv';
 
       $.get(csvlink, function(csvString) {
         // Use PapaParse to convert string to array of objects
