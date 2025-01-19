@@ -210,7 +210,7 @@
         $('.restaurant-item').eq(index).addClass('highlight');
 
         // Scroll to the highlighted restaurant
-        $('#left-panel').scrollTop($('.restaurant-item').eq(index).position().top);
+        document.getElementById(`item-${index}`).scrollIntoView(true);
       }
 
     </script>
