@@ -104,7 +104,7 @@
 
       var markers = [];  // Store markers to synchronize with the list
 
-      $.get('./poi.csv', function(csvString) {
+      $.get('./poi_en.csv', function(csvString) {
         // Use PapaParse to convert string to array of objects
         var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
 
