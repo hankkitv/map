@@ -14,23 +14,33 @@
 
       .leaflet-container {
         height: 100%;
-        width: 75%; /* Adjusted to make room for the panel */
+        width: 79%; /* Adjusted to make room for the panel */
+        margin-left: 21%;
       }
 
       #left-panel {
-        position: fixed;
-        top: 10px;
-        left: 80%;
+        position: absolute;
+        top: 0px;
+        left: 0%;
         width: 20%;
         height: calc(100% - 20px);
         background-color: rgba(255, 255, 255, 0.9);
         padding: 10px;
         overflow-y: scroll;
         box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        font-family: monospace;
+        font-size: large;
+        line-height: 1.2;
+      }
+
+      #map {
+        width: 79%;
+        height: 100%;
       }
 
       #left-panel h2 {
-        font-size: 20px;
+        font-size: 28px;
         margin-bottom: 10px;
       }
 
@@ -63,20 +73,19 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
 
   </head>
-  <body>
-    <div id="map" style="width: 75%; height: 100%;"></div>
+  <body>    
+    <div id="map"></div>
     <div id="left-panel">
-      <h2>Restaurants</h2>
       <div id="restaurant-list"></div>
     </div>
 
     <script>
-      const map = L.map('map').setView([37.613042, 127.030213], 13);
+      const map = L.map('map').setView([37.7371192,	127.043912], 15);
 
       /* Control panel to display map layers */
       var controlLayers = L.control.layers(null, null, {
         position: "topright",
-        collapsed: false
+        collapsed: true
       }).addTo(map);
 
       // display Carto basemap tiles with light features and labels
@@ -104,19 +113,27 @@
 
       var markers = [];  // Store markers to synchronize with the list
 
-      $.get('./poi_en.csv', function(csvString) {
+      const queryString = window.location.search; 
+      const urlParams = new URLSearchParams(queryString);
+      const lang = urlParams.get('lang')
+      var csvlink = (lang == 'en') ? 'poi_en.csv' | 'poi.csv'
+
+      $.get(csvlink, function(csvString) {
         // Use PapaParse to convert string to array of objects
         var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
 
         // Populate the restaurant list and map markers
         var restaurantListHTML = '';
-        for (var i in data) {
+        for (var i in data) {          
           var row = data[i];
+          if (row.name == null) continue;
 
+          row.menu = row.menu.split('|')[0];
+          row.tel = (row.tel) ? row.tel : ""; 
           // Create a marker for each restaurant
           var marker = L.marker([row.lat, row.lon], {
             opacity: 1
-          }).bindPopup('<p>' + row.name + '<br />' + row.addr + '<br />' + row.tel + '</p>');
+          }).bindPopup('<p>' + row.name + '<br /><br />' + row.link + '<br />' + row.menu + '<br /><br />' + row.tel + '</p>');
 
           // Add the marker to the map
           marker.addTo(map);
@@ -129,12 +146,14 @@
               highlightRestaurant(markerIndex);
             }
           });
-
+          
           // Create a list item for each restaurant
           restaurantListHTML += `<div class="restaurant-item" data-index="${i}">
-                                    <strong>${row.name}</strong><br />
-                                    ${row.addr}<br />
-                                    <a href="tel:${row.tel}">Call</a>
+                                    <strong>${row.name}</strong><br /><br />
+                                    ${row.addr}<br /><br />
+                                    ${row.link}<br />
+                                    ${row.menu}<br /><br />
+                                    <a href="tel:${row.tel}">${row.tel}</a>
                                   </div>`;
 
           // Store the marker reference for synchronization
@@ -144,13 +163,16 @@
         // Insert the restaurant list into the panel
         $('#restaurant-list').html(restaurantListHTML);
 
-        // Add event listener for list items
+        // // Add event listener for list items
         $('.restaurant-item').on('click', function() {
           var index = $(this).data('index');
           var marker = markers[index];
-          map.setView(marker.getLatLng(), 15);
+          // map.setView(marker.position, 15);
+          var position = markers[index].getLatLng();
+          map.setView(position, 18);
           marker.openPopup();
           highlightRestaurant(index);
+          
         });
 
       });
